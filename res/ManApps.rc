@@ -1,0 +1,5 @@
+#include <windows.h>
+
+#define IDI_APP_ICON 101
+MAINICON ICON "ManApps.ico"
+IDI_APP_ICON ICON "ManApps.ico"

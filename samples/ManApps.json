@@ -1,0 +1,44 @@
+{
+	"Git": {
+		"link": "git",
+		"dir": "git-lst",
+		"base": "git-",
+		"list": ["2.39.1", "2.51.0.2"]
+	},
+	"Go": {
+		"link": "go",
+		"dir": "go-lst",
+		"base": "go-",
+		"list": ["1.23.2", "1.25.2"]
+	},
+	"Java": {
+		"link": "java",
+		"dir": "java-lst",
+		"base": "java-",
+		"list": ["8u441","11.0.26","17.0.14","21.0.7"]
+	},
+	"Maven": {
+		"link": "maven",
+		"dir": "maven-lst",
+		"base": "apache-maven-",
+		"list": ["3.8.4","3.8.8","3.9.8","3.9.9"]
+	},
+	"Node": {
+		"link": "node",
+		"dir": "node-lst",
+		"base": "node-v",
+		"list": ["20.19.5","22.20.0","24.9.0"]
+	},
+	"PHP": {
+		"link": "php",
+		"dir": "php-lst",
+		"base": "php-",
+		"list": ["8.1.32","8.2.28","8.3.21","8.4.7"]
+	},
+	"Python": {
+		"link": "python",
+		"dir": "python-lst",
+		"base": "python-",
+		"list": ["3.12.10","3.13.8","3.14.0"]
+	}
+}
