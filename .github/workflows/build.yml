@@ -1,0 +1,48 @@
+name: Build ManApps EXE (C++ / MinGW)
+
+on:
+  push:
+    tags:
+      - 'v*.*.*'
+
+jobs:
+  build:
+    runs-on: windows-latest
+
+    steps:
+      # 1 - Checkout del repository
+      - uses: actions/checkout@v4
+
+      # 2 - Installa MSYS2 + MinGW (per windres e g++)
+      - name: Setup MSYS2
+        uses: msys2/setup-msys2@v2
+        with:
+          update: true
+          install: mingw-w64-x86_64-gcc mingw-w64-x86_64-binutils
+
+      # 3 - Compila risorse e codice C++
+      - name: Compile EXE
+        shell: msys2 {0}
+        run: |
+          echo "Compiling resource..."
+          windres res/ManApps.rc -O coff -o ManApps.o
+          echo "Compiling C++ source..."
+          g++ -Wall -O2 -mwindows src/ManApps.cpp ManApps.o -o ManApps.exe
+
+      # 4 - Prepara cartella di release
+      - name: Package Release
+        run: |
+          mkdir release
+          copy ManApps.exe release\
+          copy samples\ManApps.cfg release\
+          powershell Compress-Archive -Path release\* -DestinationPath ManApps-${GITHUB_REF_NAME}.zip
+
+      # 5 - Crea release GitHub e allega ZIP
+      - name: Upload Release
+        uses: softprops/action-gh-release@v1
+        with:
+          tag_name: ${{ github.ref_name }}
+          name: ManApps ${{ github.ref_name }}
+          files: ManApps-${{ github.ref_name }}.zip
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
