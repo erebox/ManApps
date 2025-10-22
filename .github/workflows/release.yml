@@ -1,0 +1,52 @@
+name: Build and Release
+
+on:
+  push:
+    tags:
+      - 'v*.*.*'
+  workflow_dispatch: # opzionale: permette di avviare manualmente il build
+
+permissions:
+  contents: write
+
+jobs:
+  build-and-release:
+    name: Build and create release
+    runs-on: windows-latest
+    env:
+      APP_NAME: "ManApps"
+      SRC_NAME: "manapps"
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+      - name: Setup
+        uses: msys2/setup-msys2@v2
+        with:
+          update: true
+          install: mingw-w64-x86_64-gcc mingw-w64-x86_64-binutils
+      - name: Build
+        shell: msys2 {0}
+        run: |
+          windres -Isrc -O coff res/${{ env.SRC_NAME }}.rc -o ${{ env.SRC_NAME }}_res.o
+          g++ -W -Wall -Os -s -fno-exceptions -fno-rtti -mwindows src/${{ env.SRC_NAME }}.cpp ${{ env.SRC_NAME }}_res.o -o ${{ env.APP_NAME }}.exe
+      - name: Zip
+        shell: pwsh
+        run: |
+          New-Item -ItemType Directory -Force -Path release | Out-Null
+          Copy-Item ${{ env.APP_NAME }}.exe release\
+          if (Test-Path samples\${{ env.APP_NAME }}.cfg) { Copy-Item samples\${{ env.APP_NAME }}.cfg release\ }
+          $zipName = "${{ env.APP_NAME }}-${{ github.ref_name }}.zip"
+          Compress-Archive -Path release\* -DestinationPath $zipName
+          Write-Host "Created archive: $zipName"
+      - name: Release
+        uses: softprops/action-gh-release@v2
+        with:
+          name: "${{ github.ref_name }}"
+          tag_name: "${{ github.ref_name }}"
+          body: |
+            Il pacchetto `${{ env.APP_NAME }}-${{ github.ref_name }}.zip` contiene:
+            - `${{ env.APP_NAME }}.exe`
+            - file di configurazione (`${{ env.APP_NAME }}.cfg`)
+          files: "${{ env.APP_NAME }}-${{ github.ref_name }}.zip"
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}

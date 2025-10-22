@@ -6,10 +6,9 @@
 #include <map>
 #include <vector>
 #include <filesystem>
+#include "resource.h"
 
 namespace fs = std::filesystem;
-
-#define IDI_APP_ICON 101
 
 struct AppConfig {
     std::string link;
